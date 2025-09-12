@@ -17,13 +17,28 @@ export const getCardDesign = async (req, res) => {
   }
 };
 
-// Get by ID
-// export const getCardDesignById = async (req, res) => {
-//   try {
-//     const cardDesign = await CardDesign.findById(req.params.id);
-//     if (!cardDesign) return res.status(404).json({ message: "Not found" });
-//     res.status(200).json(cardDesign);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+//get all Card Design for 
+export const getAllCardDesign = async (req, res) => {
+  try {
+    const cardDesigns = await CardDesign.findAll();
+
+    if (!cardDesigns || cardDesigns.length === 0) {
+      return res.status(404).json({ message: "No card designs found" });
+    }
+    res.status(200).json({
+      success: true,
+      count: cardDesigns.length,
+      data: cardDesigns,
+    });
+    
+  } catch (error) {
+    console.error("Error fetching card designs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch card designs",
+      error: error.message,
+    });
+  }
+};
+
+

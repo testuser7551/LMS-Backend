@@ -43,11 +43,7 @@ const WebcardSchema = new mongoose.Schema({
       imgUrl: { type: String, default: null },
       isEnabled: { type: Boolean, default: true },
     },
-    // photoSections:
-    // {
-    //     imgUrl: { type: String, default: null },
-    //     isEnabled: { type: Boolean, default: true },
-    // },
+   
 
     photoSections: {
       imgUrls: {
@@ -96,9 +92,7 @@ const WebcardSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Theme",
         default: null,
-        // required: function () {
-        //     return this.themeName !== "Custom";
-        // },
+      
       },
 
       // Custom fields

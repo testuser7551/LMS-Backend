@@ -12,8 +12,8 @@ if (!fs.existsSync(uploadDir)) {
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadDir),
     filename: (req, file, cb) => {
-        const categoryName = req.body.category || req.body.lessonName || "UnknownCategory";
-        const courseTitle = req.body.title || req.body.lessonDescription || "UnknownCourse";
+        const categoryName = req.body.category || req.body.lessonName || "Unknown";
+        const courseTitle = req.body.title || req.body.lessonDescription || "Unknown";
         const originalName = file.originalname.replace(/\s+/g, "_");
         const timestamp = Date.now();
         // Sanitize names by replacing spaces and removing special characters if needed

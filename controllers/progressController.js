@@ -130,3 +130,38 @@ export const checkAndMarkCourseComplete = async (req, res) => {
 };
 
 
+
+// Get all course progress
+export const getAllCourseProgress = async (req, res) => {
+    try {
+        const progressList = await CourseProgress.find()
+            .populate("user", "name email")      // optional, for better data display
+            .populate("course", "title description");
+
+        res.status(200).json(progressList);
+    } catch (error) {
+        console.error("Error fetching course progress:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+// Delete a particular course progress
+export const deleteCourseProgress = async (req, res) => {
+    try {
+        const { userId, courseId } = req.params;
+
+        const progress = await CourseProgress.findOneAndDelete({
+            user: userId,
+            course: courseId
+        });
+
+        if (!progress) {
+            return res.status(404).json({ message: "Course progress not found" });
+        }
+
+        res.status(200).json({ message: "Course progress deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting course progress:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};

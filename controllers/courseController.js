@@ -34,6 +34,48 @@ export const saveCourseDetails = async (req, res) => {
     }
 };
 
+// Update Course Details
+export const updateCourseDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { category, title, description, level, instructor, chapters } = req.body;
+
+        const image = req.file ? req.file.filename : undefined; // undefined means don't update if no new file
+
+        let chaptersArray = [];
+        if (chapters) {
+            try {
+                chaptersArray = JSON.parse(chapters);
+            } catch (error) {
+                return res.status(400).json({ success: false, message: "Invalid chapters format" });
+            }
+        }
+
+        const updateFields = {
+            category,
+            title,
+            description,
+            level,
+            instructor,
+            chapters: chaptersArray,
+        };
+
+        if (image !== undefined) {
+            updateFields.image = image;
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(id, updateFields, { new: true });
+
+        if (!updatedCourse) {
+            return res.status(404).json({ success: false, message: "Course not found" });
+        }
+
+        res.json({ success: true, course: updatedCourse });
+    } catch (error) {
+        console.error("Error updating course:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
 
 // Save Chapter Title
 export const saveChapter = async (req, res) => {
@@ -52,7 +94,46 @@ export const saveChapter = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+export const updateChapterController = async (req, res) => {
+    try {
+        const { courseId, chapterId } = req.params;
+        const { chapterTitle } = req.body;
 
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ success: false, message: "Course not found" });
+
+        const chapter = course.chapters.id(chapterId);
+        if (!chapter) return res.status(404).json({ success: false, message: "Chapter not found" });
+
+        chapter.chapterTitle = chapterTitle;
+        await course.save();
+
+        res.json({ success: true, chapter });
+    } catch (error) {
+        console.error("Error updating chapter:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+export const deleteChapter = async (req, res) => {
+    const { courseId, chapterId } = req.params;
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ success: false, message: "Course not found" });
+        }
+
+        // Filter out the chapter to delete
+        course.chapters = course.chapters.filter((chapter) => chapter._id.toString() !== chapterId);
+
+        await course.save();
+
+        res.status(200).json({ success: true, message: "Chapter deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting chapter:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
 // Save Lesson
 export const saveLesson = async (req, res) => {
     try {
@@ -89,12 +170,73 @@ export const saveLesson = async (req, res) => {
         await course.save();
 
         const newLesson = chapter.lessons[chapter.lessons.length - 1];
-        res.status(201).json({ success: true, lesson: newLesson }); 
+        res.status(201).json({ success: true, lesson: newLesson });
     } catch (error) {
         console.error("Error in saveLesson:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+export const updateLesson = async (req, res) => {
+    try {
+        const { courseId, chapterId, lessonId } = req.params;
+        const updatedData = req.body; // { lessonName, lectureType, duration, published, etc. }
+        console.log(courseId, chapterId, lessonId, updatedData);
+        const course = await Course.findById(courseId);
+        if (!course) return res.status(404).json({ success: false, message: "Course not found" });
+
+        // Find the chapter
+        const chapter = course.chapters.id(chapterId);
+        if (!chapter) return res.status(404).json({ success: false, message: "Chapter not found" });
+
+        // Find the lesson
+        const lesson = chapter.lessons.id(lessonId);
+        if (!lesson) return res.status(404).json({ success: false, message: "Lesson not found" });
+
+        // Update lesson fields
+        Object.keys(updatedData).forEach(key => {
+            lesson[key] = updatedData[key];
+        });
+
+        await course.save();
+
+        res.json({ success: true, lesson });
+    } catch (error) {
+        console.error("Error updating lesson:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+export const deleteLesson = async (req, res) => {
+    try {
+        const { courseId, chapterId, lessonId } = req.params;
+
+        const course = await Course.findById(courseId);
+        if (!course)
+            return res.status(404).json({ success: false, message: "Course not found" });
+
+        const chapter = course.chapters.id(chapterId);
+        if (!chapter)
+            return res.status(404).json({ success: false, message: "Chapter not found" });
+
+        const lesson = chapter.lessons.id(lessonId);
+        if (!lesson)
+            return res
+                .status(404)
+                .json({ success: false, message: "Lesson not found" });
+        // Remove the lesson using filter
+        chapter.lessons = chapter.lessons.filter(
+            (lesson) => lesson._id.toString() !== lessonId
+        );
+
+        await course.save();
+
+        res.json({ success: true, message: "Lesson deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting lesson:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
 
 
 // Save Entire Course

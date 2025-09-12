@@ -10,6 +10,8 @@
 // export default router;
 
 import express from "express";
+import multer from "multer";
+import path from "path";
 import { updateProfileSection, updateHeaderSection, updateFontSection, updateBannerImgSection} from "../controllers/styleController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { updateThemesSection } from "../controllers/themeController.js";
@@ -17,6 +19,19 @@ import { updateThemesSection } from "../controllers/themeController.js";
 const router = express.Router();
 
 router.use(authMiddleware);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // save to uploads folder
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      "banner-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({ storage });
 
 // GET profile section
 // router.get("/profile", getProfileSection);

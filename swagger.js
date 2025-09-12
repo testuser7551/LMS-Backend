@@ -5,9 +5,9 @@ const options = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "Courses API",
+            title: "LMS API",
             version: "1.0.0",
-            description: "API for managing courses, chapters, and quizzes",
+            description: "API for managing LMS card design, courses, chapters, and quizzes",
         },
         servers: [
             {
@@ -22,5 +22,5 @@ const options = {
 const specs = swaggerJsDoc(options);
 
 export default (app) => {
-    app.use("/", swaggerUi.serve, swaggerUi.setup(specs));
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 };

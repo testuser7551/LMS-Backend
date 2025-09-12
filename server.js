@@ -17,9 +17,12 @@ import textSectionRoutes from "./routes/textSectionRoutes.js";
 import stylesRoutes from "./routes/stylesRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import linkSectionRoutes from "./routes/linkSectionRoutes.js";
+import gallarySectionRoutes from "./routes/gallerySectionsRoutes.js"
+import photoSectionRoutes from "./routes/photoSectionRoutes.js"
 import youTubeSectionRoutes from "./routes/youTubeSectionRoutes.js"
 import themeRoutes from "./routes/themeRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
+import fs from "fs";
 //import cookieParser from "cookie-parser";
 const HOST = "0.0.0.0";
 
@@ -45,7 +48,22 @@ app.use("/api/auth", authRoutes);
 // Serve uploaded files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+const galleryDir = path.join(__dirname, "uploads", "gallery");
+if (!fs.existsSync(galleryDir)) {
+  fs.mkdirSync(galleryDir, { recursive: true });
+}
+
+const photoDir = path.join(__dirname, "uploads", "photos");
+if (!fs.existsSync(photoDir)) {
+  fs.mkdirSync(photoDir, { recursive: true });
+}
+
+// ✅ Serve static uploads, gallery, and photos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads/gallery", express.static(galleryDir));
+app.use("/uploads/photos", express.static(photoDir));
 
 // Routes
 app.use("/api/categories", categoryRoutes);
@@ -61,9 +79,11 @@ app.use("/api/themes", themeRoutes);
 
 app.use("/api/settings", settingsRoutes);
 app.use("/api/textSection", textSectionRoutes);
-app.use("/api/card-design", cardDesignRoutes);
+app.use("/api", cardDesignRoutes);
 app.use("/api/linkSection", linkSectionRoutes);
 app.use("/api/youTubeSection",youTubeSectionRoutes);
+app.use("/api/gallerySection",gallarySectionRoutes);
+app.use("/api/photoSection",photoSectionRoutes);
 
 swaggerSetup(app);
 
