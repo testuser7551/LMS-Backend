@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const WebcardSchema = new mongoose.Schema({
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
   about: {
     basicdetails: {
       name: { type: String, default: null },
@@ -9,7 +14,7 @@ const WebcardSchema = new mongoose.Schema({
       jobTitle: { type: String, default: null },
       organization: { type: String, default: null },
       location: { type: String, default: null },
-      cardVisibility: { type: Boolean, default: false },
+      cardVisibility: { type: Boolean, default: true },
     },
     mainButton: {
       buttonType: {
@@ -32,31 +37,31 @@ const WebcardSchema = new mongoose.Schema({
       heading: { type: String, default: null },
       title: { type: String, default: null },
       content: { type: String, default: null },
-      isEnabled: { type: Boolean, default: true },
+      isEnabled: { type: Boolean, default:false },
     },
     linksSection: {
       title: { type: String, default: null },
       link: { type: String, default: null },
-      isEnabled: { type: Boolean, default: true },
+      isEnabled: { type: Boolean, default: false },
     },
     gallerySections: {
       imgUrl: { type: String, default: null },
-      isEnabled: { type: Boolean, default: true },
+      isEnabled: { type: Boolean, default: false },
     },
-   
+
 
     photoSections: {
       imgUrls: {
         type: [String], // Array of strings
         default: [], // Empty array by default
       },
-      isEnabled: { type: Boolean, default: true },
+      isEnabled: { type: Boolean, default: false },
     },
 
     youtubeSections: {
       title: { type: String, default: null },
       link: { type: String, default: null },
-      isEnabled: { type: Boolean, default: true },
+      isEnabled: { type: Boolean, default: false },
     },
   },
   style: {
@@ -92,7 +97,6 @@ const WebcardSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Theme",
         default: null,
-      
       },
 
       // Custom fields

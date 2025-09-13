@@ -67,6 +67,64 @@
 import Webcard from "../models/CardDesigner.js";
 import User from "../models/User.js";
 
+import path from "path";
+import fs from "fs";
+
+// Helper
+const getUserWithWebcard = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  if (!user.webcard_id) throw new Error("User does not have a linked webcard");
+  return user;
+};
+
+
+
+export const saveProfileSection = async (req, res) => {
+  try {
+    const user = await getUserWithWebcard(req.userId);
+
+    const { profileShapes, profileRingOnPhoto, profileVerified } = req.body;
+
+    // Find webcard
+    const webcard = await Webcard.findById(user.webcard_id);
+    if (!webcard) {
+      return res.status(404).json({ success: false, message: "Webcard not found" });
+    }
+
+    let imgUrl = webcard.style?.profileSection?.profileImgUrl || null;
+
+    // If new file uploaded → replace old one
+    if (req.file) {
+      if (imgUrl) {
+        const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, "")); // strip leading /
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      imgUrl = `/uploads/profile/${req.file.filename}`;
+    }
+
+    // Update profile section
+    webcard.style.profileSection = {
+      profileImgUrl: imgUrl,
+      profileShapes,
+      profileRingOnPhoto: profileRingOnPhoto === "true",
+      profileVerified: profileVerified === "true",
+    };
+
+    await webcard.save();
+
+    res.status(201).json({
+      success: true,
+      profileSection: webcard.style.profileSection,
+    });
+  } catch (err) {
+    console.error("Save ProfileSection Error:", err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // // ---------------- GET Profile Section ----------------
 // export const getProfileSection = async (req, res) => {
 //   try {
@@ -87,39 +145,7 @@ import User from "../models/User.js";
 //   }
 // };
 
-// ---------------- PUT Update Profile Section ----------------
-export const updateProfileSection = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user.webcard_id) {
-      return res.status(404).json({ message: "User does not have a linked webcard" });
-    }
-
-    const updates = req.body.profileSection;  // { profileImgUrl, profileShapes, profileRingOnPhoto, profileVerified }
-
-    const webcard = await Webcard.findByIdAndUpdate(
-  user.webcard_id,
-  {
-    $set: {
-      "style.profileSection.profileImgUrl": updates.profileImgUrl,
-      "style.profileSection.profileShapes": updates.profileShapes,
-      "style.profileSection.profileRingOnPhoto": updates.profileRingOnPhoto,
-      "style.profileSection.profileVerified": updates.profileVerified,
-    },
-  },
-  { new: true }
-);
-
-    if (!webcard) return res.status(404).json({ message: "Webcard not found" });
-
-    res.status(200).json(webcard.style.profileSection);
-  } catch (error) {
-    console.error("ProfileSection PUT Error:", error.message);
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // ---------------- PUT Update Header Style Section ----------------
 export const updateHeaderSection = async (req, res) => {
@@ -186,35 +212,73 @@ export const updateFontSection = async (req, res) => {
 };
 
 // ---------------- PUT Update Banner Image Section ----------------
-export const updateBannerImgSection = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+// export const updateBannerImgSection = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.userId);
+//     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user.webcard_id) {
-      return res
-        .status(404)
-        .json({ message: "User does not have a linked webcard" });
+//     if (!user.webcard_id) {
+//       return res
+//         .status(404)
+//         .json({ message: "User does not have a linked webcard" });
+//     }
+
+//     const updates = req.body.bannerImgSection; // { bannerImgUrl }
+
+//     const webcard = await Webcard.findByIdAndUpdate(
+//       user.webcard_id,
+//       {
+//         $set: {
+//           "style.bannerImgSection.bannerImgUrl": updates.bannerImgUrl,
+//         },
+//       },
+//       { new: true }
+//     );
+
+//     if (!webcard) return res.status(404).json({ message: "Webcard not found" });
+
+//     res.status(200).json({ bannerImgUrl: webcard.style.bannerImgUrl });
+//   } catch (error) {
+//     console.error("BannerImgSection PUT Error:", error.message);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+export const saveBannerImgSection = async (req, res) => {
+  try {
+    const user = await getUserWithWebcard(req.userId);
+
+    // Find webcard
+    const webcard = await Webcard.findById(user.webcard_id);
+    if (!webcard) {
+      return res.status(404).json({ success: false, message: "Webcard not found" });
     }
 
-    const updates = req.body.bannerImgSection; // { bannerImgUrl }
+    let imgUrl = webcard.style?.bannerSection?.bannerImgUrl || null;
 
-    const webcard = await Webcard.findByIdAndUpdate(
-      user.webcard_id,
-      {
-        $set: {
-          "style.bannerImgSection.bannerImgUrl": updates.bannerImgUrl,
-        },
-      },
-      { new: true }
-    );
+    // If new file uploaded → replace old one
+    if (req.file) {
+      if (imgUrl) {
+        const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, ""));
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      imgUrl = `/uploads/banner/${req.file.filename}`;
+    }
 
-    if (!webcard) return res.status(404).json({ message: "Webcard not found" });
+    // Update banner section
+    webcard.style.bannerSection = {
+      bannerImgUrl: imgUrl,
+    };
 
-    res.status(200).json({ bannerImgUrl: webcard.style.bannerImgUrl });
-  } catch (error) {
-    console.error("BannerImgSection PUT Error:", error.message);
-    res.status(500).json({ message: error.message });
+    await webcard.save();
+
+    res.status(201).json({
+      success: true,
+      bannerSection: webcard.style.bannerSection,
+    });
+  } catch (err) {
+    console.error("Save BannerSection Error:", err.message);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 

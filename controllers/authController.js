@@ -34,12 +34,18 @@ export const registerUser = async (req, res) => {
     const webcard = await Webcard.create({
       user_id: user._id,   // assuming Webcard has a user reference
       // you can initialize default fields here, like theme, about, etc.
+      about: {
+        basicdetails: {
+          name: user.name,
+          email: user.email,
+        }
+      }
     });
 
     // Step 3: Link the Webcard to the user
     user.webcard_id = webcard._id;
     await user.save();
-    
+
     res.status(201).json({
       user: {
         _id: user._id,

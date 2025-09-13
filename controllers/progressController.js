@@ -108,7 +108,7 @@ export const checkAndMarkCourseComplete = async (req, res) => {
         const allLessonsCompleted = courseProgress.chapters.every(chapter =>
             chapter.lessons.every(lesson => lesson.completed)
         );
-
+        console.log(allLessonsCompleted);
         if (allLessonsCompleted && !courseProgress.courseCompleted) {
             courseProgress.courseCompleted = true;
             await courseProgress.save();
@@ -128,7 +128,6 @@ export const checkAndMarkCourseComplete = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
-
 
 
 // Get all course progress
@@ -162,6 +161,41 @@ export const deleteCourseProgress = async (req, res) => {
         res.status(200).json({ message: "Course progress deleted successfully" });
     } catch (error) {
         console.error("Error deleting course progress:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+// Get progress status of a specific lesson
+export const getLessonProgress = async (req, res) => {
+    try {
+        const { userId, courseId, chapterId, lessonId } = req.query;
+
+        if (!userId || !courseId || !chapterId || !lessonId) {
+            return res.status(400).json({ message: "All parameters are required" });
+        }
+
+        const progress = await CourseProgress.findOne({ user: userId, course: courseId });
+        if (!progress) {
+            return res.status(404).json({ message: "Progress not found" });
+        }
+
+        const chapter = progress.chapters.find(c => c.chapterId.toString() === chapterId);
+        if (!chapter) {
+            return res.status(404).json({ message: "Chapter not found" });
+        }
+
+        const lesson = chapter.lessons.find(l => l.lessonId.toString() === lessonId);
+        if (!lesson) {
+            return res.status(404).json({ message: "Lesson not found" });
+        }
+
+        return res.status(200).json({
+            completed: lesson.completed,
+            quizAnswers: lesson.quizAnswers || []
+        });
+
+    } catch (error) {
+        console.error("Error fetching lesson progress:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };

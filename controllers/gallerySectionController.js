@@ -174,7 +174,7 @@ export const saveGallerySection = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      gallerySection: webcard.content.gallerySections,
+      gallerySections: webcard.content.gallerySections,
     });
   } catch (err) {
     console.error("Save GallerySection Error:", err.message);

@@ -1,5 +1,5 @@
 import express from "express";
-import { initCourseProgress, markLessonComplete, submitQuiz, checkAndMarkCourseComplete, getAllCourseProgress, deleteCourseProgress } from "../controllers/progressController.js";
+import { initCourseProgress, markLessonComplete, submitQuiz, checkAndMarkCourseComplete, getAllCourseProgress, deleteCourseProgress, getLessonProgress } from "../controllers/progressController.js";
 
 const router = express.Router();
 
@@ -9,4 +9,6 @@ router.post("/quiz-submit", submitQuiz);
 router.post("/check-complete", checkAndMarkCourseComplete);
 router.get("/", getAllCourseProgress);
 router.delete("/:userId/:courseId", deleteCourseProgress);
+
+router.get("/lesson-progress", getLessonProgress);
 export default router;

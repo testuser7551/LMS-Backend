@@ -22,6 +22,8 @@ import photoSectionRoutes from "./routes/photoSectionRoutes.js"
 import youTubeSectionRoutes from "./routes/youTubeSectionRoutes.js"
 import themeRoutes from "./routes/themeRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
+import profileSectionRoutes from "./routes/profileSectionRoutes.js"
+import bannerSectionRoutes from "./routes/bannerSectionRoutes.js";
 import fs from "fs";
 //import cookieParser from "cookie-parser";
 const HOST = "0.0.0.0";
@@ -60,11 +62,26 @@ if (!fs.existsSync(photoDir)) {
   fs.mkdirSync(photoDir, { recursive: true });
 }
 
+const profileDir = path.join(__dirname, "uploads", "profile");
+if (!fs.existsSync(profileDir)) {
+  fs.mkdirSync(profileDir, { recursive: true });
+}
+
+const bannerDir = path.join(__dirname, "uploads", "banner");
+if (!fs.existsSync(bannerDir)) {
+  fs.mkdirSync(bannerDir, { recursive: true });
+}
+
+
+
+
 // ✅ Serve static uploads, gallery, and photos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/uploads/gallery", express.static(galleryDir));
 app.use("/uploads/photos", express.static(photoDir));
-
+// ✅ Serve profile uploads too
+app.use("/uploads/profile", express.static(profileDir));
+app.use("/uploads/banner", express.static(bannerDir));
 // Routes
 app.use("/api/categories", categoryRoutes);
 app.use("/api/courses", courseRoutes);
@@ -75,6 +92,8 @@ app.use("/api/basic",basicDetailsRoutes);
 app.use("/api/mainbutton",mainButtonRoutes);
 app.use("/api/whatsappButton",whatsappButtonRoutes);
 app.use("/api/styles", stylesRoutes);
+app.use("/api/profileSection", profileSectionRoutes);
+app.use("/api/bannerSection", bannerSectionRoutes );
 app.use("/api/themes", themeRoutes);
 
 app.use("/api/settings", settingsRoutes);
