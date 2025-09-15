@@ -106,7 +106,7 @@ export const updateThemesSection = async (req, res) => {
 
     if (!webcard) return res.status(404).json({ message: "Webcard not found" });
 
-    console.log("Updated Themes Section:", webcard.style.themesSection);
+    // console.log("Updated Themes Section:", webcard.style.themesSection);
 
     res.status(200).json(webcard.style.themesSection);
   } catch (error) {

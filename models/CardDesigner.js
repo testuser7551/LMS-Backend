@@ -31,7 +31,6 @@ const WebcardSchema = new mongoose.Schema({
       isEnabled: { type: Boolean, default: false },
     },
   },
-
   content: {
     textSection: {
       heading: { type: String, default: null },

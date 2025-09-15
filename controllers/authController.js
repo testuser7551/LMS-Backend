@@ -2,19 +2,8 @@
 import User from "../models/User.js";
 import Webcard from "../models/CardDesigner.js";
 import jwt from "jsonwebtoken";
+import { generateToken, getUserDetails } from "../helpers/JwtHelper.js";
 
-const generateToken = (user) => {
-  return jwt.sign(
-    {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE }
-  );
-};
 
 // @desc Register user
 export const registerUser = async (req, res) => {

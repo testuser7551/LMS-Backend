@@ -4,28 +4,14 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import swaggerSetup from './swagger.js'
-import cardDesignRoutes from "./routes/cardDesignRoutes.js"
-import basicDetailsRoutes from "./routes/basicDetailsRoutes.js"
-import courseRoutes from "./routes/courseRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import enrollRoutes from "./routes/enrollRoutes.js"
-import mainButtonRoutes from "./routes/mainButtonRoutes.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import whatsappButtonRoutes from "./routes/whatsappButtonRoutes.js";
-import textSectionRoutes from "./routes/textSectionRoutes.js";
-import stylesRoutes from "./routes/stylesRoutes.js";
-import settingsRoutes from "./routes/settingsRoutes.js";
-import linkSectionRoutes from "./routes/linkSectionRoutes.js";
-import gallarySectionRoutes from "./routes/gallerySectionsRoutes.js"
-import photoSectionRoutes from "./routes/photoSectionRoutes.js"
-import youTubeSectionRoutes from "./routes/youTubeSectionRoutes.js"
-import themeRoutes from "./routes/themeRoutes.js";
-import progressRoutes from "./routes/progressRoutes.js";
-import profileSectionRoutes from "./routes/profileSectionRoutes.js"
-import bannerSectionRoutes from "./routes/bannerSectionRoutes.js";
-import fs from "fs";
+import { authMiddleware } from "./middleware/authMiddleware.js";
+import indexRoutes from "./routes/index.route.js";
 //import cookieParser from "cookie-parser";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+
 const HOST = "0.0.0.0";
 
 dotenv.config();
@@ -43,68 +29,39 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use("/api/auth", authRoutes);
-//app.use(cookieParser());
 
-// Serve uploaded files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Use project root (where server.js is located)
+const rootDir = path.resolve(__dirname);
 
-const galleryDir = path.join(__dirname, "uploads", "gallery");
-if (!fs.existsSync(galleryDir)) {
-  fs.mkdirSync(galleryDir, { recursive: true });
-}
+// Ensure uploads folders exist
+const uploadRoot = path.join(rootDir, "uploads");
+["gallery", "photos", "profile", "banner", "courses"].forEach((folder) => {
+  const dir = path.join(uploadRoot, folder);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
-const photoDir = path.join(__dirname, "uploads", "photos");
-if (!fs.existsSync(photoDir)) {
-  fs.mkdirSync(photoDir, { recursive: true });
-}
+app.get("/", (req, res) => {
+  res.send("Welcome to LMS Backend");
+});
 
-const profileDir = path.join(__dirname, "uploads", "profile");
-if (!fs.existsSync(profileDir)) {
-  fs.mkdirSync(profileDir, { recursive: true });
-}
+// Serve static uploads
+app.use("/uploads", express.static(uploadRoot));
 
-const bannerDir = path.join(__dirname, "uploads", "banner");
-if (!fs.existsSync(bannerDir)) {
-  fs.mkdirSync(bannerDir, { recursive: true });
-}
-
-
+// without protection Routes
+app.use("/api/auth", authRoutes);
+//app.use(cookieParser());
 
 
-// ✅ Serve static uploads, gallery, and photos
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/uploads/gallery", express.static(galleryDir));
-app.use("/uploads/photos", express.static(photoDir));
-// ✅ Serve profile uploads too
-app.use("/uploads/profile", express.static(profileDir));
-app.use("/uploads/banner", express.static(bannerDir));
-// Routes
-app.use("/api/categories", categoryRoutes);
-app.use("/api/courses", courseRoutes);
-app.use("/api/progress", progressRoutes);
+app.use(authMiddleware);
 
-app.use("/api/enrollment", enrollRoutes);
-app.use("/api/basic",basicDetailsRoutes);
-app.use("/api/mainbutton",mainButtonRoutes);
-app.use("/api/whatsappButton",whatsappButtonRoutes);
-app.use("/api/styles", stylesRoutes);
-app.use("/api/profileSection", profileSectionRoutes);
-app.use("/api/bannerSection", bannerSectionRoutes );
-app.use("/api/themes", themeRoutes);
-
-app.use("/api/settings", settingsRoutes);
-app.use("/api/textSection", textSectionRoutes);
-app.use("/api", cardDesignRoutes);
-app.use("/api/linkSection", linkSectionRoutes);
-app.use("/api/youTubeSection",youTubeSectionRoutes);
-app.use("/api/gallerySection",gallarySectionRoutes);
-app.use("/api/photoSection",photoSectionRoutes);
+app.use("/api", indexRoutes);
 
 swaggerSetup(app);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT,HOST, () => console.log(` Server running on http://${HOST} port ${PORT}`));
