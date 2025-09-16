@@ -1,4 +1,5 @@
-import CourseProgress from "../models/CourseProgress.js";
+import CourseProgress from "../../models/courses/CourseProgress.js";
+
 
 // Initialize course progress on enrollment
 export const initCourseProgress = async (req, res) => {
@@ -22,7 +23,7 @@ export const initCourseProgress = async (req, res) => {
         await courseProgress.save();
         res.json(courseProgress);
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).json({ message: err.message });
     }
 };
@@ -52,7 +53,7 @@ export const markLessonComplete = async (req, res) => {
         await progress.save();
         res.json({ message: "Lesson marked complete", progress });
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).json({ message: err.message });
     }
 };
@@ -61,7 +62,7 @@ export const markLessonComplete = async (req, res) => {
 export const submitQuiz = async (req, res) => {
     try {
         const { userId, courseId, chapterId, lessonId, answers } = req.body;
-        console.log(userId, courseId, chapterId, lessonId, answers);
+        // console.log(userId, courseId, chapterId, lessonId, answers);
         const progress = await CourseProgress.findOne({ user: userId, course: courseId });
         if (!progress) return res.status(404).json({ message: "Progress not found" });
 
@@ -80,7 +81,7 @@ export const submitQuiz = async (req, res) => {
         await progress.save();
         res.json({ message: "Quiz submitted and lesson completed", progress });
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).json({ message: err.message });
     }
 };
@@ -108,7 +109,7 @@ export const checkAndMarkCourseComplete = async (req, res) => {
         const allLessonsCompleted = courseProgress.chapters.every(chapter =>
             chapter.lessons.every(lesson => lesson.completed)
         );
-        console.log(allLessonsCompleted);
+        // console.log(allLessonsCompleted);
         if (allLessonsCompleted && !courseProgress.courseCompleted) {
             courseProgress.courseCompleted = true;
             await courseProgress.save();
@@ -124,7 +125,7 @@ export const checkAndMarkCourseComplete = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error in checkAndMarkCourseComplete:", error);
+        // console.error("Error in checkAndMarkCourseComplete:", error);
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
@@ -139,7 +140,7 @@ export const getAllCourseProgress = async (req, res) => {
 
         res.status(200).json(progressList);
     } catch (error) {
-        console.error("Error fetching course progress:", error);
+        // console.error("Error fetching course progress:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
@@ -160,7 +161,7 @@ export const deleteCourseProgress = async (req, res) => {
 
         res.status(200).json({ message: "Course progress deleted successfully" });
     } catch (error) {
-        console.error("Error deleting course progress:", error);
+        // console.error("Error deleting course progress:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
@@ -195,7 +196,7 @@ export const getLessonProgress = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error fetching lesson progress:", error);
+        // console.error("Error fetching lesson progress:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };

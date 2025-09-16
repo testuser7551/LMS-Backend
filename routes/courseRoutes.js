@@ -5,7 +5,7 @@ import {
     createCategory,
     updateCategory,
     deleteCategory,
-} from "../controllers/categoryController.js";
+} from "../controllers/courses/categoryController.js";
 
 import {
     saveCourseDetails,
@@ -20,12 +20,13 @@ import {
     deleteChapter,
     updateLesson,
     deleteLesson,
-} from "../controllers/courseController.js";
+    publishFullCourse,
+} from "../controllers/courses/courseController.js";
 
 
-import { enrollUser, getEnrollments, getAllEnroll, deleteEnrollment } from "../controllers/enrollController.js";
+import { enrollUser, getEnrollments, getAllEnroll, deleteEnrollment } from "../controllers/courses/enrollController.js";
 
-import { initCourseProgress, markLessonComplete, submitQuiz, checkAndMarkCourseComplete, getAllCourseProgress, deleteCourseProgress, getLessonProgress } from "../controllers/progressController.js";
+import { initCourseProgress, markLessonComplete, submitQuiz, checkAndMarkCourseComplete, getAllCourseProgress, deleteCourseProgress, getLessonProgress } from "../controllers/courses/progressController.js";
 
 
 import upload from "../middleware/upload.js";
@@ -74,6 +75,7 @@ router.put("/:courseId/chapter/:chapterId", updateChapterController);
 router.delete("/:courseId/chapters/:chapterId", deleteChapter);
 router.put("/:courseId/chapters/:chapterId/lessons/:lessonId", updateLesson);
 router.delete("/:courseId/chapters/:chapterId/lessons/:lessonId", deleteLesson);
+router.put("/:courseId/publish", publishFullCourse);
 
 
 

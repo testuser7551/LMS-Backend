@@ -1,6 +1,6 @@
-import Enrollment from "../models/EnrollModel.js";
-import User from "../models/User.js";
-import Course from "../models/Course.js";
+import Enrollment from "../../models/courses/EnrollModel.js";
+import User from "../../models/User.js";
+import Course from "../../models/courses/Course.js";
 
 // Enroll user in a course
 export const enrollUser = async (req, res) => {
@@ -63,7 +63,7 @@ export const getAllEnroll = async (req, res) => {
             .populate("course", "title description");
         res.status(200).json(enrollments);
     } catch (error) {
-        console.error("Error fetching enrollments:", error);
+        // console.error("Error fetching enrollments:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
@@ -83,7 +83,7 @@ export const deleteEnrollment = async (req, res) => {
 
         res.status(200).json({ message: "Enrollment deleted successfully" });
     } catch (error) {
-        console.error("Error deleting enrollment:", error);
+        // console.error("Error deleting enrollment:", error);
         res.status(500).json({ message: "Server error" });
     }
 };

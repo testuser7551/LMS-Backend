@@ -5,7 +5,7 @@ import User from "../../models/User.js"
 // Get single card design for students
 export const getCardDesign = async (req, res) => {
   try {
-    console.log(req.user)
+    // console.log(req.user)
     const user = await User.findById(req.user._id);
     if (!user || !user.webcard_id) {
       return res.status(404).json({ message: "No Webcard found for this user" });
@@ -38,6 +38,23 @@ export const getAllCardDesign = async (req, res) => {
       message: "Failed to fetch card designs",
       error: error.message,
     });
+  }
+};
+
+// Get single card design for students
+// ✅ Get card design by ID (not by logged-in user)
+export const getCardDesignById = async (req, res) => {
+  try {
+    const { id } = req.params; // get id from route parameter
+
+    const cardDesign = await CardDesign.findById(id);
+    if (!cardDesign) {
+      return res.status(404).json({ message: "Card design not found" });
+    }
+
+    res.status(200).json(cardDesign);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

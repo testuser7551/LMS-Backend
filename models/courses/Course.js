@@ -58,6 +58,7 @@ const CourseSchema = new mongoose.Schema(
         instructor: { type: String },
         image: { type: mongoose.Schema.Types.Mixed }, // File object or URL
         chapters: [ChapterSchema],
+        coursepublished: { type: String, enum: ["Draft", "Published"], default: "Draft" },
     },
     { timestamps: true }
 );

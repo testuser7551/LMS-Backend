@@ -18,7 +18,7 @@ export const updateLinkSection = async (req, res) => {
     try {
         const data = req.body; // partial update
         const user = await getUserWithWebcard(req.user._id);
-        console.log(data);
+        // console.log(data);
         const updateFields = {};
         if (data.title && typeof data.title !== "string") {
             return res.status(400).json({ message: "Title must be a string" });
@@ -194,7 +194,7 @@ export const savePhotoSection = async (req, res) => {
 
 export const deletePhoto = async (req, res) => {
   try {
-    const user = await getUserWithWebcard(req.userId);
+    const user = await getUserWithWebcard(req.user._id);
     const { filename } = req.body;  // ✅ from body, not params
 
     if (!filename) {

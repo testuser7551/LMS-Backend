@@ -1,7 +1,7 @@
 import express from "express";
 
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import {getCardDesign,getAllCardDesign} from "../controllers/carddesign/cardDesignController.js";
+import {getCardDesign,getAllCardDesign,getCardDesignById} from "../controllers/carddesign/cardDesignController.js";
 import { updateBasicDetails, createOrUpdateMainButton, createOrUpdateWhatsappButton } from "../controllers/carddesign/aboutController.js"
 import { updateLinkSection,updateYouTubeSection,updateTextSection,saveGallerySection,savePhotoSection,deletePhoto} from "../controllers/carddesign/contentController.js"
 import {  getThemes,updateHeaderSection, updateFontSection,updateThemesSection, saveProfileSection,saveBannerImgSection} from "../controllers/carddesign/styleController.js";
@@ -18,6 +18,7 @@ import bannerUpload from "../middleware/bannerUpload.js";
 const router = express.Router();
 
 router.get("/card-design", getCardDesign);
+router.get("/card-design/:id", getCardDesignById);
 router.get("/all-card-design", getAllCardDesign);
 
 

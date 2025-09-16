@@ -1,7 +1,8 @@
 import Webcard from "../../models/CardDesigner.js";
 import User from "../../models/User.js";
 import Theme from "../../models/ThemeSchema.js";
-
+import path from "path";
+import fs from "fs";
 
 const getUserWithWebcard = async (userId) => {
     const user = await User.findById(userId);
@@ -12,14 +13,13 @@ const getUserWithWebcard = async (userId) => {
 
 //get themes 
 export const getThemes = async (req, res) => {
-  try {
-    const themes = await Theme.find();
-    res.json(themes);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const themes = await Theme.find();
+        res.json(themes);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
-
 
 export const saveProfileSection = async (req, res) => {
     try {
@@ -140,10 +140,19 @@ export const saveBannerImgSection = async (req, res) => {
             return res.status(404).json({ success: false, message: "Webcard not found" });
         }
 
-        let imgUrl = webcard.style?.bannerSection?.bannerImgUrl || null;
+        let imgUrl = webcard.style?.bannerImgUrl || null;
 
         // If new file uploaded → replace old one
-        if (req.file) {
+        if (req.body.bannerImg === "") {
+            if (imgUrl) {
+                const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, ""));
+                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+            }
+            imgUrl = null; // clear in DB
+        }
+
+        // 🟢 CASE 2: New file uploaded → replace old one
+        else if (req.file) {
             if (imgUrl) {
                 const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, ""));
                 if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
@@ -151,16 +160,13 @@ export const saveBannerImgSection = async (req, res) => {
             imgUrl = `/uploads/banner/${req.file.filename}`;
         }
 
+
         // Update banner section
-        webcard.style.bannerSection = {
-            bannerImgUrl: imgUrl,
-        };
-
+        webcard.style.bannerImgUrl = imgUrl,
         await webcard.save();
-
         res.status(201).json({
             success: true,
-            bannerSection: webcard.style.bannerSection,
+            bannerImgUrl: webcard.style.bannerImgUrl,
         });
     } catch (err) {
         console.error("Save BannerSection Error:", err.message);
@@ -203,7 +209,7 @@ export const updateThemesSection = async (req, res) => {
 
         if (!webcard) return res.status(404).json({ message: "Webcard not found" });
 
-        console.log("Updated Themes Section:", webcard.style.themesSection);
+        // console.log("Updated Themes Section:", webcard.style.themesSection);
 
         res.status(200).json(webcard.style.themesSection);
     } catch (error) {

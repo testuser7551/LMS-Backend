@@ -137,3 +137,9 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# Ignore everything inside uploads
+uploads/*
+# But keep the folder structure
+!uploads/.gitkeep

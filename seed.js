@@ -89,7 +89,7 @@ async function seedThemes() {
     }));
 
     await ThemeSchema.insertMany(themeDocs);
-    console.log("✅ Themes seeded successfully");
+    // console.log("✅ Themes seeded successfully");
     mongoose.connection.close();
   } catch (error) {
     console.error("❌ Error seeding themes:", error);

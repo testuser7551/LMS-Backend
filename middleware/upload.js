@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
         // Construct the new filename
         const fileName = `${cleanCategory}_${timestamp}.${originalExtension}`;
 
-        console.log(fileName);
+        // console.log(fileName);
 
         cb(null, fileName);
     },

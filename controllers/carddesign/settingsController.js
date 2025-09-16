@@ -18,7 +18,7 @@ export const updateSettings = async (req, res) => {
       { $set: { settings: settings } },
       { new: true }
     );
-    console.log(webcard);
+    // console.log(webcard);
     if (!webcard) {
       return res.status(404).json({ message: "Webcard not found" });
     }

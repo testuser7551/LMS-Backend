@@ -36,7 +36,7 @@ const WebcardSchema = new mongoose.Schema({
       heading: { type: String, default: null },
       title: { type: String, default: null },
       content: { type: String, default: null },
-      isEnabled: { type: Boolean, default:false },
+      isEnabled: { type: Boolean, default: false },
     },
     linksSection: {
       title: { type: String, default: null },
@@ -74,9 +74,7 @@ const WebcardSchema = new mongoose.Schema({
       profileRingOnPhoto: { type: Boolean, default: false },
       profileVerified: { type: Boolean, default: false },
     },
-    bannerImgSection: {
-      bannerImgUrl: { type: String, default: null },
-    },
+    bannerImgUrl: { type: String, default: null },
     themesSection: {
       themeName: {
         type: String,
@@ -108,9 +106,9 @@ const WebcardSchema = new mongoose.Schema({
     headerStyleSection: {
       headerStyle: { type: String, default: null },
     },
-    fontStyleSection: {
+    fontStyleSection:{
       font: { type: String, default: null },
-    },
+    }
   },
   settings: {
     domainUrl: { type: String, default: null },

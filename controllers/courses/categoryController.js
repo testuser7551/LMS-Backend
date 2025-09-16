@@ -1,5 +1,6 @@
-import Category from "../models/categoryModel.js";
+import Category from "../../models/courses/categoryModel.js";
 
+/**
 /**
  * Get all categories
  */
@@ -8,7 +9,7 @@ export const getCategories = async (req, res) => {
         const categories = await Category.find().sort({ createdAt: -1 });
         res.json({ categories });
     } catch (err) {
-        console.error("getCategories error:", err);
+        // console.error("getCategories error:", err);
         res.status(500).json({ message: "Failed to fetch categories" });
     }
 };
@@ -38,7 +39,7 @@ export const createCategory = async (req, res) => {
         await category.save();
         res.status(201).json({ category });
     } catch (err) {
-        console.error("createCategory error:", err);
+        // console.error("createCategory error:", err);
         res.status(500).json({ message: "Failed to create category" });
     }
 };
@@ -59,7 +60,7 @@ export const updateCategory = async (req, res) => {
 
         res.json({ category });
     } catch (err) {
-        console.error("updateCategory error:", err);
+        // console.error("updateCategory error:", err);
         res.status(500).json({ message: "Failed to update category" });
     }
 };
@@ -74,7 +75,7 @@ export const deleteCategory = async (req, res) => {
 
         res.json({ message: "Category deleted successfully" });
     } catch (err) {
-        console.error("deleteCategory error:", err);
+        // console.error("deleteCategory error:", err);
         res.status(500).json({ message: "Failed to delete category" });
     }
 };
