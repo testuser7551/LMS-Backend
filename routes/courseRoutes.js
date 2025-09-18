@@ -21,6 +21,7 @@ import {
     updateLesson,
     deleteLesson,
     publishFullCourse,
+    getEnrolledCourseCount,
 } from "../controllers/courses/courseController.js";
 
 
@@ -28,8 +29,12 @@ import { enrollUser, getEnrollments, getAllEnroll, deleteEnrollment } from "../c
 
 import { initCourseProgress, markLessonComplete, submitQuiz, checkAndMarkCourseComplete, getAllCourseProgress, deleteCourseProgress, getLessonProgress } from "../controllers/courses/progressController.js";
 
+import { markCourseCompleted, getCompletedCourses, getCertificate } from "../controllers/courses/completedCourseController.js";
+
 
 import upload from "../middleware/upload.js";
+import upload2 from "../middleware/courseCompleted.js";
+
 const router = express.Router();
 
 import { authorizeRoles } from "../middleware/roleMiddleWare.js";
@@ -62,6 +67,13 @@ router.get("/progress/lesson-progress", getLessonProgress);
 
 
 
+router.post("/completed", upload2.single("certificate"), markCourseCompleted);
+router.get("/completed/user/:userId", getCompletedCourses);
+router.get("/completed/certificate/:userId/:courseId", getCertificate);
+
+
+
+
 
 router.post("/", upload.single("image"), saveCourseDetails);
 router.put("/:id", upload.single("image"), updateCourseDetails);
@@ -76,6 +88,7 @@ router.delete("/:courseId/chapters/:chapterId", deleteChapter);
 router.put("/:courseId/chapters/:chapterId/lessons/:lessonId", updateLesson);
 router.delete("/:courseId/chapters/:chapterId/lessons/:lessonId", deleteLesson);
 router.put("/:courseId/publish", publishFullCourse);
+router.get("/enrollcoursescount/:courseId", getEnrolledCourseCount);
 
 
 

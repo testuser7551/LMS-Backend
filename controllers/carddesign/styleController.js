@@ -36,14 +36,33 @@ export const saveProfileSection = async (req, res) => {
         let imgUrl = webcard.style?.profileSection?.profileImgUrl || null;
 
         // If new file uploaded → replace old one
+        // if (req.file) {
+        //     if (imgUrl) {
+        //         const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, "")); // strip leading /
+        //         if (fs.existsSync(oldPath)) {
+        //             fs.unlinkSync(oldPath);
+        //         }
+        //     }
+        //     imgUrl = `/uploads/profile/${req.file.filename}`;
+        // }
         if (req.file) {
+            // Case 1: new file uploaded → replace old
             if (imgUrl) {
-                const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, "")); // strip leading /
+                const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, ""));
                 if (fs.existsSync(oldPath)) {
                     fs.unlinkSync(oldPath);
                 }
             }
             imgUrl = `/uploads/profile/${req.file.filename}`;
+        } else {
+            // Case 2: no file provided → remove old one if exists
+            if (imgUrl) {
+                const oldPath = path.join(process.cwd(), imgUrl.replace(/^\/+/, ""));
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+                imgUrl = null; // clear from DB too
+            }
         }
 
         // Update profile section

@@ -4,6 +4,7 @@ import User from "../models/User.js";
 export const generateToken = (user) => {
   return jwt.sign(
     {
+      name:user.name,
       email: user.email,
       role: user.role
     },
@@ -21,3 +22,7 @@ export const getUserDetails = async (mail) => {
     throw new Error(err.message);
   }
 };
+
+
+
+

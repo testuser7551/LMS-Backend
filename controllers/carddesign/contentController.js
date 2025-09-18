@@ -195,7 +195,7 @@ export const savePhotoSection = async (req, res) => {
 export const deletePhoto = async (req, res) => {
   try {
     const user = await getUserWithWebcard(req.user._id);
-    const { filename } = req.body;  // ✅ from body, not params
+    const { filename } = req.body;  // from body, not params
 
     if (!filename) {
       return res.status(400).json({ message: "Filename is required" });
@@ -203,7 +203,7 @@ export const deletePhoto = async (req, res) => {
 
     const photoPath = `/uploads/photos/${filename}`;
 
-    // 1️⃣ Update DB → Remove filename from array
+    // Update DB → Remove filename from array
     const webcard = await Webcard.findByIdAndUpdate(
       user.webcard_id,
       { $pull: { "content.photoSections.imgUrls": photoPath } },
@@ -214,7 +214,7 @@ export const deletePhoto = async (req, res) => {
       return res.status(404).json({ message: "Webcard not found" });
     }
 
-    // 2️⃣ Delete from folder if exists
+    // Delete from folder if exists
     const absolutePath = path.join(process.cwd(), "uploads", "photos", filename);
     if (fs.existsSync(absolutePath)) {
       fs.unlinkSync(absolutePath);

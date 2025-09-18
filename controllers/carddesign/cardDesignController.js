@@ -42,7 +42,7 @@ export const getAllCardDesign = async (req, res) => {
 };
 
 // Get single card design for students
-// ✅ Get card design by ID (not by logged-in user)
+// Get card design by ID (not by logged-in user)
 export const getCardDesignById = async (req, res) => {
   try {
     const { id } = req.params; // get id from route parameter

@@ -47,21 +47,51 @@ const WebcardSchema = new mongoose.Schema({
       imgUrl: { type: String, default: null },
       isEnabled: { type: Boolean, default: false },
     },
-
-
-    photoSections: {
-      imgUrls: {
-        type: [String], // Array of strings
-        default: [], // Empty array by default
-      },
-      isEnabled: { type: Boolean, default: false },
-    },
-
-    youtubeSections: {
+  },
+  contentAbout: {
+    aboutMeSection: {
+      heading: { type: String, default: null },
       title: { type: String, default: null },
-      link: { type: String, default: null },
+      content: { type: String, default: null },
       isEnabled: { type: Boolean, default: false },
     },
+    experienceSection: {
+      experienceTitle: { type: String, default: null },
+      experienceData: [
+        {
+          title: { type: String, default: null },
+          company: { type: String, default: null },
+          startDate: { month: { type: String, default: null }, year: { type: String, default: null } },
+          endDate: { month: { type: String, default: null }, year: { type: String, default: null } },
+          currentlyWorking: { type: Boolean, default: true }
+        }
+      ],
+      isEnabled: { type: Boolean, default: false },
+    },
+    educationSection: {
+      educationTitle: { type: String, default: null },
+      educationData: [
+        {
+          organization: { type: String, default: null },
+          degree: { type: String, default: null },
+          startDate: { month: { type: String, default: null }, year: { type: String, default: null } },
+          endDate: { month: { type: String, default: null }, year: { type: String, default: null } },
+          currentlyStudying: { type: Boolean, default: true }
+        }
+      ],
+      isEnabled: { type: Boolean, default: false },
+    },
+    isEnabled: { type: Boolean, default: false },
+  },
+  certification: {
+    isEnabled: { type: Boolean, default: false },
+    coursecertificates: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CompletedCourse",
+        required: true,
+      }
+    ]
   },
   style: {
     profileSection: {
@@ -106,7 +136,7 @@ const WebcardSchema = new mongoose.Schema({
     headerStyleSection: {
       headerStyle: { type: String, default: null },
     },
-    fontStyleSection:{
+    fontStyleSection: {
       font: { type: String, default: null },
     }
   },

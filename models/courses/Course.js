@@ -56,9 +56,15 @@ const CourseSchema = new mongoose.Schema(
         description: { type: String },
         level: { type: String, enum: ["Beginner", "Intermediate", "Advanced"], default: "Beginner" },
         instructor: { type: String },
+        tags: { type: [String], default: [] },
         image: { type: mongoose.Schema.Types.Mixed }, // File object or URL
         chapters: [ChapterSchema],
         coursepublished: { type: String, enum: ["Draft", "Published"], default: "Draft" },
+        status: {
+            type: String,
+            enum: ["Active", "Inactive"],
+            default: "Active",
+        },
     },
     { timestamps: true }
 );

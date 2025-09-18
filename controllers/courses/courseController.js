@@ -1,11 +1,14 @@
 import Course from "../../models/courses/Course.js";
 import path from "path";
 import fs from "fs";
+import Enrollment from "../../models/courses/EnrollModel.js";
 
 // Save Course Details with Image Upload
 export const saveCourseDetails = async (req, res) => {
     try {
-        const { category, title, description, level, instructor, chapters } = req.body;
+
+        const { category, title, description, level, instructor, tags, chapters } = req.body;
+        const tagsarray = JSON.parse(req.body.tags);
         // Handle uploaded file
         const image = req.file ? req.file.filename : null;
         // Parse chapters if it's sent as a JSON string
@@ -23,6 +26,7 @@ export const saveCourseDetails = async (req, res) => {
             description,
             level,
             instructor,
+            tags: tagsarray,
             image,
             chapters: chaptersArray,
         });
@@ -38,7 +42,22 @@ export const saveCourseDetails = async (req, res) => {
 export const updateCourseDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        const { category, title, description, level, instructor, chapters } = req.body;
+
+
+        const enrolledCount = await Enrollment.countDocuments({ course: id });
+        console.log(`Enrolled students: ${enrolledCount}`);
+
+        // If there are enrolled students, block update
+        if (enrolledCount > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot update course because students are already enrolled."
+            });
+        }
+
+
+        const { category, title, description, level, instructor, tags, chapters } = req.body;
+        const tagsarray = JSON.parse(req.body.tags);
 
         const image = req.file ? req.file.filename : undefined; // undefined means don't update if no new file
 
@@ -57,6 +76,7 @@ export const updateCourseDetails = async (req, res) => {
             description,
             level,
             instructor,
+            tags: tagsarray,
             chapters: chaptersArray,
         };
 
@@ -260,7 +280,9 @@ export const saveFullCourse = async (req, res) => {
 // Get all courses
 export const getAllCourses = async (req, res) => {
     try {
-        const courses = await Course.find();
+        // const courses = await Course.find();
+        // When fetching courses
+        const courses = await Course.find({ status: "Active" });
         res.status(200).json({ success: true, courses });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -293,28 +315,32 @@ export const deleteCourse = async (req, res) => {
         if (!course) {
             return res.status(404).json({ success: false, message: "Course not found" });
         }
+        // Instead of Course.deleteOne({_id: id})
+        await Course.findByIdAndUpdate(courseId, { status: "Inactive" });
 
-        // 1. Delete course image if exists
-        if (course.image) {
-            const imgPath = path.join(process.cwd(), "uploads", course.image);
-            if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-        }
 
-        // 2. Delete all lesson files (videos, PDFs, etc.)
-        course.chapters.forEach((chapter) => {
-            chapter.lessons.forEach((lesson) => {
-                // If lesson has a file uploaded
-                if (lesson.file) {
-                    const filePath = path.join(process.cwd(), "uploads", lesson.file);
-                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                }
-            });
-        });
+        // // 1. Delete course image if exists
+        // if (course.image) {
+        //     const imgPath = path.join(process.cwd(), "uploads", course.image);
+        //     if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+        // }
 
-        // 3. Delete course from DB
-        await Course.findByIdAndDelete(courseId);
+        // // 2. Delete all lesson files (videos, PDFs, etc.)
+        // course.chapters.forEach((chapter) => {
+        //     chapter.lessons.forEach((lesson) => {
+        //         // If lesson has a file uploaded
+        //         if (lesson.file) {
+        //             const filePath = path.join(process.cwd(), "uploads", lesson.file);
+        //             if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        //         }
+        //     });
+        // });
 
-        res.status(200).json({ success: true, message: "Course and all associated files deleted successfully" });
+        // // 3. Delete course from DB
+        // await Course.findByIdAndDelete(courseId);
+
+        // res.status(200).json({ success: true, message: "Course and all associated files deleted successfully" });
+        res.status(200).json({ success: true, message: "Course Inactivated successfully" });
     } catch (error) {
         // console.error("Error deleting course:", error);
         res.status(500).json({ success: false, error: error.message });
@@ -382,9 +408,20 @@ const updateCourseStatus = async (courseId) => {
                 course.coursepublished = "Published";
             } else {
                 course.coursepublished = "Draft";
-            }   
+            }
         }
     }
     await course.save();
     // console.log(course);
+};
+
+
+export const getEnrolledCourseCount = async (req, res) => {
+    try {
+        const courseId = req.params.courseId;
+        const enrolledCount = await Enrollment.countDocuments({ course: courseId });
+        res.status(200).json({ success: true, enrolledCount });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 };

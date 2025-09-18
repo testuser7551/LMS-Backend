@@ -1,16 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import swaggerSetup from './swagger.js'
-import { authMiddleware } from "./middleware/authMiddleware.js";
-import indexRoutes from "./routes/index.route.js";
 //import cookieParser from "cookie-parser";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import swaggerSetup from './swagger.js'
 
+import connectDB from "./config/db.js";
+import { authMiddleware } from "./middleware/authMiddleware.js";
+
+import authRoutes from "./routes/authRoutes.js";
+import {getCardDesignById} from "./controllers/carddesign/cardDesignController.js";
+
+import indexRoutes from "./routes/index.route.js";
 
 const HOST = "0.0.0.0";
 
@@ -38,7 +41,7 @@ const rootDir = path.resolve(__dirname);
 
 // Ensure uploads folders exist
 const uploadRoot = path.join(rootDir, "uploads");
-["gallery", "photos", "profile", "banner", "courses"].forEach((folder) => {
+["gallery", "photos", "profile", "banner", "courses", "completed"].forEach((folder) => {
   const dir = path.join(uploadRoot, folder);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -52,10 +55,11 @@ app.get("/", (req, res) => {
 // Serve static uploads
 app.use("/uploads", express.static(uploadRoot));
 
-// without protection Routes
+// public Routes
 app.use("/api/auth", authRoutes);
 //app.use(cookieParser());
 
+app.get("/card-design/:id", getCardDesignById);
 
 app.use(authMiddleware);
 
